@@ -1,29 +1,26 @@
 # Crasmo Client
 
-An independent Minecraft Java launcher UI and Tauri 2 desktop application scaffold. The current commit delivers a working React launcher shell with navigable Home, Instances, Mods & Packs (live Modrinth search), Skins, and Settings screens. Instance creation/filtering, selection, the command palette, custom window controls, and local UI settings are interactive.
+Crasmo Client is an independent Minecraft Java launcher project using Tauri 2 and React. It is not affiliated with Mojang or Microsoft and contains no official Minecraft artwork or textures.
 
-> Crasmo Client is not affiliated with Mojang or Microsoft. This project uses no official game artwork or textures.
+## Run locally
 
-## Requirements
-- Node.js 20+ and npm
-- Rust stable with the platform build prerequisites for Tauri 2 (see https://v2.tauri.app/start/prerequisites/)
-- For Microsoft authentication, register an application in the Azure portal and configure a public-client/device-code flow. Never commit client secrets or access/refresh tokens.
+Requirements: Node.js 20+, Rust stable, and the platform prerequisites for Tauri 2 (see [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/)).
 
-## Run
 ```sh
 npm install
 npm run tauri dev
 ```
-For browser-only UI development: `npm run dev`.
-Build the frontend with `npm run build`; build platform installer/bundle targets with `npm run tauri build` on Windows, macOS, or Linux. Native bundles need to be built on their respective platforms.
 
-## Implementation status
-The current deliverable is the launcher foundation, not a fully playable game installer. Rust modules and typed error boundaries are laid out by domain; the exposed backend currently includes health/settings/instance-list scaffolding. Authentication and keychain storage, Mojang version/install manifest, verified/resumable downloads, real instance persistence, JVM argument generation/process management, loader installation, Modrinth dependency-aware installs, profile skin API/3D preview, and cross-platform installer validation remain to be implemented. The frontend intentionally labels launch/upload actions as unavailable rather than claiming success. No credentials are embedded.
+For browser-only UI development use `npm run dev`. Build the frontend with `npm run build`; build a native bundle with `npm run tauri build` on Windows, macOS, or Linux. Native installers must be produced on their respective platforms.
 
-## Next phases
-1. Persist instance/settings models and typed command errors in app data.
-2. Implement manifest + artifact installation with SHA-1 validation, progress events, cancellation, and tests.
-3. Add Microsoft device-code/Xbox/Minecraft auth using OS credential storage.
-4. Construct/test JVM launch arguments and supervise game processes.
-5. Integrate Fabric/Forge/Quilt and Modrinth dependency resolution.
-6. Add account-backed skin upload/profile updates, real 3D preview, accessibility/platform QA.
+## Current implementation
+
+The React shell includes Home, Instances, Modrinth search, Skins, and Settings pages, custom window controls, a command palette, instance selection, and a persistent glass play bar. The Tauri backend now persists instance metadata and validated settings in the application data directory, creates isolated instance directories, and fetches/caches Mojang's version manifest with offline cache fallback. The frontend hydrates and persists desktop instance creations/deletions through typed invoke wrappers. Rust unit tests cover instance name validation and settings validation.
+
+To enable Microsoft sign-in in a future implementation, register an application in Azure with the appropriate public-client/device-code flow. Do not store client secrets or access/refresh tokens in source control.
+
+## Not yet implemented
+
+This is not yet a playable launcher: Microsoft/Xbox/Minecraft authentication and OS keychain storage, SHA-1 verified/resumable game downloads and progress cancellation, complete libraries/assets/natives installation, JVM argument construction and process supervision, Fabric/Forge/Quilt installation, dependency-aware mod downloads, and account-backed skin upload/3D preview remain unfinished. The frontend marks those operations as unavailable rather than faking success. Cross-platform native bundles and runtime behavior still need to be verified on Windows, macOS, and Linux.
+
+Run `cargo test --manifest-path src-tauri/Cargo.toml` to execute backend unit tests and `npm run build` for the frontend production build.
