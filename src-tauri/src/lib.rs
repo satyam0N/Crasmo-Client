@@ -9,11 +9,20 @@ pub mod versions;
 
 #[tauri::command]
 fn ping() -> &'static str { "Crasmo Client backend ready" }
-#[tauri::command]
-fn list_instances() -> Result<Vec<serde_json::Value>, String> { Ok(Vec::new()) }
-#[tauri::command]
-fn get_settings() -> Result<serde_json::Value, String> { Ok(serde_json::json!({"memory_min_gb":2,"memory_max_gb":16,"memory_recommended_gb":6})) }
-#[tauri::command]
-fn save_settings(settings: serde_json::Value) -> Result<(), String> { if !settings.is_object(){return Err("Settings must be a JSON object".into())} Ok(()) }
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() { tauri::Builder::default().invoke_handler(tauri::generate_handler![ping,list_instances,get_settings,save_settings]).run(tauri::generate_context!()).expect("error while running Crasmo Client"); }
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![
+            ping,
+            instances::list_instances,
+            instances::create_instance,
+            instances::delete_instance,
+            settings::get_settings,
+            settings::save_settings,
+            versions::get_version_manifest
+        ])
+        .run(tauri::generate_context!())
+        .expect("error while running Crasmo Client");
+}
